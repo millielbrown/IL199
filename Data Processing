@@ -1,0 +1,30 @@
+library(lubridate)
+library(dplyr)
+
+data <- read.csv("jwdata.csv")
+data <- data.frame(data)
+
+names(data)
+data1 <- data.frame(data$date, data$new_cases)
+names(data1)
+
+data2 <- data.frame()
+data2 <- aggregate(x = data1$data.new_cases, by = list(data1$data.date), FUN = sum)
+
+
+data3 <- data2[data2[["Group.1"]] <= "2020-09-14", ]
+data3$date <- data3$Group.1
+data3$date <- date(data3$date)
+
+
+data3$week <- floor_date(data3$date, "week")
+
+data4 <- data.frame()
+data4 <- aggregate(x = data3$x, by = list(data3$week), FUN = sum)
+
+data4[is.na(data4)] <- 0
+
+zooniverse <- c(8167,6649,9838,8875,11727,10113,10385,12629,11036,18006,20297,16771,17534,34793,31801,35155,44029,32123,31862,32690,26494,26119,27897, 27238, 24534,20846, 18455, 17281, 25372, 24685, 22491, 18067, 14681, 12287, 11683, 17581, 16699, 28970)
+data4 <- cbind(data4, zooniverse)
+
+write.csv(data4,"amended_data.csv")
